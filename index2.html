@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PocketGardener - Urban Gardening Companion</title>
+<link rel="stylesheet" href="style2.css">
+<meta name="title" content="PocketGardener – Your Offline Urban Gardening Companion">
+<meta name="description" content="PocketGardener helps you track plant care, organize swaps, and plan your garden – fully offline, private, and easy to use. No AI, no backend, no sign-up.">
+<meta name="keywords" content="gardening app, urban gardening, offline garden planner, houseplants, plant care, balcony garden, plant swap, garden journal, sustainable living, home plants, indoor plants, eco friendly, community gardening, garden tracker, garden diary">
+<meta name="author" content="PocketGardener Team">
+<meta name="robots" content="index, follow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="PocketGardener – Offline Gardening Companion">
+<meta property="og:description" content="Plan, track, and share your garden completely offline. Perfect for balcony and urban gardeners.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="thumbnail.jpg"> <!-- optional -->
+<meta property="og:url" content="https://yourdomain.com">
+<link rel="canonical" href="https://yourdomain.com">
+
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-content">
+      <h1>🌱 PocketGardener</h1>
+      <button class="nav-toggle" id="navToggle" aria-label="Open navigation">Menu</button>
+      <nav>
+        <button class="nav-btn active" data-section="library">Library</button>
+        <button class="nav-btn" data-section="planner">Planner</button>
+        <button class="nav-btn" data-section="swap">Community</button>
+        <button class="nav-btn" data-section="lessons">Lessons</button>
+        <button class="nav-btn" data-section="utilities">Tools</button>
+        <!--<button class="nav-btn" data-section="settings">Settings</button>-->
+        <button id="profileBtn" class="nav-btn profile-trigger">👤 Profile ▾</button>
+      </nav>
+      <div id="profileDropdown" class="profile-dropdown">
+  <button id="viewProfileBtn">View Profile</button>
+  <button id="switchAccountBtn">Switch Account</button>
+  <button id="logoutBtn">Log Out</button>
+</div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Plant Library Section -->
+  <section id="library" class="section active">
+    <div class="card">
+      <h2>🌿 My Plant Library</h2>
+      <p style="color: var(--text-light); margin-bottom: 1.5rem;">Track and manage your plant collection with photos and detailed care notes.</p>
+      <button class="btn" id="addPlantBtn">+ Add New Plant</button>
+    </div>
+    <div id="plantGrid" class="grid"></div>
+  </section>
+
+ <!-- Planner Section -->
+  <section id="planner" class="section">
+    <div class="card">
+      <h2>📅 Care Planner & Reminders</h2>
+      <p style="color: var(--text-light); margin-bottom: 1.5rem;">Never forget to water, fertilize, or care for your plants again.</p>
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+        <button class="btn" id="addReminderBtn">+ Add Care Reminder</button>
+        <button class="btn btn-secondary" id="toggleCalendarBtn">📅 Toggle Calendar View</button>
+      </div>
+    </div>
+    
+    <!-- Calendar View -->
+    <div id="calendarView" class="card">
+      <div class="calendar-header">
+        <button class="btn btn-small" id="prevMonth">← Previous</button>
+        <h3 id="calendarMonth" style="color: var(--primary-dark); margin: 0;"></h3>
+        <button class="btn btn-small" id="nextMonth">Next →</button>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+      <div id="calendarLegend" class="calendar-legend">
+        <div><span class="legend-dot" style="background: var(--primary);"></span> Plant Care</div>
+        <div><span class="legend-dot" style="background: var(--purple);"></span> Community Events</div>
+      </div>
+    </div>
+    
+    <div id="remindersList" class="card"></div>
+  </section>
+
+  <!-- Plant Swap Section -->
+  <!-- Enhanced Community Hub Section with DataManager and Location Support -->
+<section id="swap" class="section">
+  <div class="card">
+    <h2>🌿 Plant Community Hub</h2>
+    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+      Connect with fellow gardeners! Share cuttings, exchange seeds, organize swap events, 
+      or find gardening buddies in your area.
+    </p>
+
+    <!-- Filter & Search Bar -->
+    <div class="community-controls">
+      <input type="text" id="swapSearch" placeholder="🔍 Search listings..." class="search-bar">
+      <select id="swapFilter">
+        <option value="all">All Types</option>
+        <option value="cutting">🌱 Cuttings</option>
+        <option value="seeds">🌾 Seeds</option>
+        <option value="event">📅 Events</option>
+        <option value="tools">🛠️ Tools</option>
+      </select>
+      <select id="swapSort">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="az">A–Z</option>
+      </select>
+      <button class="btn" id="addSwapBtn">+ Create Listing</button>
+    </div>
+  </div>
+
+  <!-- Listing Grid -->
+  <div id="swapList" class="grid community-grid"></div>
+</section>
+
+<!-- Enhanced Add Swap Modal -->
+<div id="addSwapModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🌿 Create Community Listing</h2>
+      <button class="close-modal" data-modal="addSwapModal">&times;</button>
+    </div>
+    <form id="addSwapForm">
+      <div class="form-group">
+        <label>Listing Type *</label>
+        <select id="swapType" required>
+          <option value="cutting">🌱 Plant Cutting</option>
+          <option value="seeds">🌾 Seeds</option>
+          <option value="event">📅 Gardening Event</option>
+          <option value="tools">🛠️ Tools/Supplies</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" id="swapItem" required placeholder="e.g., Golden Pothos Cuttings or Spring Plant Swap Meet">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="swapDescription" placeholder="Provide details: condition, quantity, event date/time, or any special notes..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" id="swapLocation" placeholder="City, area, or nearby landmark">
+      </div>
+      <div class="form-group">
+        <label>Contact Information</label>
+        <input type="text" id="swapContact" placeholder="Email, phone, or social handle (optional)">
+      </div>
+      <div class="info-box" style="margin: 1rem 0;">
+        <p style="color: var(--text); font-size: 0.9rem;">
+          💡 <strong>Tip:</strong> Be specific about availability, location, and exchange preferences. For events, include date, time, and address.
+        </p>
+      </div>
+      <button type="button" class="btn btn-secondary" id="previewSwapBtn">👀 Preview</button>
+      <button type="submit" class="btn">Publish Listing</button>
+    </form>
+
+    <!-- Preview Panel -->
+    <div id="swapPreview" class="preview-card" style="display:none; margin-top:1rem; padding:1rem; border:1px solid var(--border); border-radius:8px; background:var(--card-bg);">
+      <h3>📋 Preview Listing</h3>
+      <div id="previewContent" style="margin-top:0.5rem;"></div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+  <!-- Micro-lessons Section -->
+  <section id="lessons" class="section">
+    <div class="card">
+      <h2>📖 Gardening Knowledge Base</h2>
+      <p style="color: var(--text-light); margin-bottom: 1rem;">
+        Expand your green thumb with expert tips, guides, and proven techniques for successful urban gardening.
+      </p>
+    </div>
+    <div id="lessonsList"></div>
+  </section>
+
+  <!-- Utilities Section -->
+  <section id="utilities" class="section">
+    <div class="card">
+      <h3>⏱️ Watering Timer</h3>
+      <p style="color: var(--text-light);">Set a timer to avoid over or under-watering your plants.</p>
+      <div class="form-group">
+        <label>Duration (minutes):</label>
+        <input type="number" id="timerMinutes" value="5" min="1" max="60">
+      </div>
+      <div class="timer-display" id="timerDisplay">05:00</div>
+      <div class="timer-controls">
+        <button class="btn" id="startTimer">Start Timer</button>
+        <button class="btn btn-secondary" id="pauseTimer">Pause</button>
+        <button class="btn btn-secondary" id="resetTimer">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>☀️ Light Level Estimator</h3>
+      <p style="color: var(--text-light);">Estimate the light level in your space and get personalized plant recommendations.</p>
+      <div class="form-group">
+        <label>Adjust Light Level:</label>
+        <input type="range" id="lightSlider" min="0" max="100" value="50" style="width: 100%;">
+      </div>
+      <div class="light-meter">
+        <div class="light-indicator" id="lightIndicator">☀️</div>
+      </div>
+      <div class="light-result" id="lightResult">Medium Light</div>
+      
+      <div class="info-box">
+        <h4 style="color: var(--primary-dark); margin-bottom: 0.5rem;">💡 Light Details</h4>
+        <p id="lightDescription" style="color: var(--text); margin-bottom: 0.5rem;"></p>
+        <p id="lightFootcandles" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;"></p>
+        
+        <h4 style="color: var(--primary-dark); margin: 1rem 0 0.5rem;">🌱 Recommended Plants</h4>
+        <div id="lightPlantRecommendations" style="color: var(--text);"></div>
+        
+        <h4 style="color: var(--primary-dark); margin: 1rem 0 0.5rem;">📍 Placement Tips</h4>
+        <p id="lightPlacementTips" style="color: var(--text-light); font-size: 0.9rem;"></p>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <h4 style="color: var(--primary-dark); margin-bottom: 0.75rem;">Quick Compare</h4>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+          <button class="btn btn-small" onclick="UI.setLightLevel(16)">Low Light</button>
+          <button class="btn btn-small" onclick="UI.setLightLevel(50)">Medium Light</button>
+          <button class="btn btn-small" onclick="UI.setLightLevel(84)">High Light</button>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top: 1.5rem;">
+        <h4 style="color: var(--primary-dark); margin-bottom: 0.75rem;">📊 Light Reference Guide</h4>
+        <ul style="font-size: 0.9rem; color: var(--text); margin-left: 1.5rem; line-height: 1.7;">
+          <li><strong>Low (0-33%):</strong> 50-250 fc | North windows, rooms without direct sun</li>
+          <li><strong>Medium (34-66%):</strong> 250-1000 fc | East/West windows, bright indirect</li>
+          <li><strong>High (67-100%):</strong> 1000+ fc | South windows, direct sunlight</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Settings Section -->
+  <section id="settings" class="section">
+  <div class="card">
+    <h2>👤 My Profile</h2>
+    <p style="color: var(--text-light); margin-bottom: 1.5rem;">Your personal PocketGardener account details.</p>
+
+    <div class="profile-info" style="display: grid; gap: 1rem; max-width: 500px;">
+      <div>
+        <strong>Name:</strong>
+        <p id="profileName" style="color: var(--text); margin-top: 0.25rem;">Loading...</p>
+      </div>
+      <div>
+        <strong>Email:</strong>
+        <p id="profileEmail" style="color: var(--text); margin-top: 0.25rem;">Loading...</p>
+      </div>
+      <div>
+        <strong>User ID:</strong>
+        <p id="profileId" style="color: var(--text); margin-top: 0.25rem;">Loading...</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <button class="btn" id="editProfileBtn">✏️ Edit Profile</button>
+      <button class="btn btn-secondary" id="logoutBtn2">🚪 Log Out</button>
+    </div>
+  </div>
+  <!-- 🌿 Edit Profile Modal -->
+<div id="editProfileModal" class="modal">
+  <div class="modal-content card" style="max-width: 400px;">
+    <h3>Edit Profile</h3>
+    <label>Name</label>
+    <input type="text" id="editProfileName" placeholder="Enter your name" />
+    
+    <label>Email</label>
+    <input type="email" id="editProfileEmail" placeholder="Enter your email" />
+
+    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+      <button class="btn" id="saveProfileBtn">Save</button>
+      <button class="btn btn-secondary" id="cancelEditProfileBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p style="font-size: 1.1rem; font-weight: 600;">🌱 PocketGardener - Your offline urban gardening companion</p>
+  </div>
+</footer>
+
+<!-- Add Plant Modal -->
+<div id="addPlantModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🌱 Add New Plant</h2>
+      <button class="close-modal" data-modal="addPlantModal">&times;</button>
+    </div>
+    <form id="addPlantForm">
+      <div class="form-group">
+        <label>Plant Name *</label>
+        <input type="text" id="plantName" required placeholder="e.g., Monstera Deliciosa">
+      </div>
+      <div class="form-group">
+        <label>📸 Photo (optional)</label>
+        <input type="file" id="plantPhoto" accept="image/*">
+        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">
+          Select an image from your device
+        </p>
+      </div>
+      <div class="form-group">
+        <label>📝 Care Notes</label>
+        <textarea id="plantNotes" placeholder="Watering schedule, fertilizing tips, special care instructions..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>🏷️ Tags</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" value="indoor"> 🏠 Indoor</label>
+          <label><input type="checkbox" value="outdoor"> 🌳 Outdoor</label>
+          <label><input type="checkbox" value="full-sun"> ☀️ Full Sun</label>
+          <label><input type="checkbox" value="partial-shade"> ⛅ Partial Shade</label>
+          <label><input type="checkbox" value="shade"> 🌙 Shade</label>
+          <label><input type="checkbox" value="low-water"> 💧 Low Water</label>
+          <label><input type="checkbox" value="high-water"> 💦 High Water</label>
+        </div>
+      </div>
+      <button type="submit" class="btn">Save Plant</button>
+    </form>
+  </div>
+</div>
+
+<!-- Add Reminder Modal -->
+<div id="addReminderModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>📅 Add Care Reminder</h2>
+      <button class="close-modal" data-modal="addReminderModal">&times;</button>
+    </div>
+    <form id="addReminderForm">
+  <div class="form-group">
+  <label>Plant Name *</label>
+  <select id="plantSelect" required></select>
+  </div>
+
+
+  <div class="form-group">
+    <label>Care Type *</label>
+    <select id="taskSelect" required>
+      <option value="water">💧 Water</option>
+      <option value="fertilize">🌿 Fertilize</option>
+      <option value="prune">✂️ Prune</option>
+      <option value="repot">🪴 Repot</option>
+      <option value="check">👀 Check Health</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Date *</label>
+    <input type="date" id="dateSelect" required>
+  </div>
+
+  <div class="form-group">
+    <label>Notes (optional)</label>
+    <textarea id="noteInput" placeholder="Add care details if needed..."></textarea>
+  </div>
+
+  <button type="submit" class="btn">Save Reminder</button>
+</form>
+  </div>
+</div>
+
+<!-- Add Swap Modal -->
+<div id="addSwapModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🌿 Create Community Listing</h2>
+      <button class="close-modal" data-modal="addSwapModal">&times;</button>
+    </div>
+    <form id="addSwapForm">
+      <div class="form-group">
+        <label>Listing Type *</label>
+        <select id="swapType" required>
+          <option value="cutting">🌱 Plant Cutting</option>
+          <option value="seeds">🌾 Seeds</option>
+          <option value="event">📅 Gardening Event</option>
+          <option value="tools">🛠️ Tools/Supplies</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" id="swapItem" required placeholder="e.g., Golden Pothos Cuttings or Spring Plant Swap Meet">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="swapDescription" placeholder="Provide details: condition, quantity, event date/time, or any special notes..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Contact Information</label>
+        <input type="text" id="swapContact" placeholder="Email, phone, meeting location, or social media handle">
+      </div>
+      <div class="info-box" style="margin-top: 1rem; margin-bottom: 1rem;">
+        <p style="color: var(--text); font-size: 0.9rem;">
+          💡 <strong>Tip:</strong> Be specific about availability, location, and any exchange preferences. 
+          For events, include date, time, and address!
+        </p>
+      </div>
+      <button type="submit" class="btn">Publish Listing</button>
+    </form>
+  </div>
+</div>
+
+<!-- Welcome Modal -->
+<div id="welcomeModal" class="modal">
+  <div class="modal-content welcome-modal">
+    <h2>🌱 Welcome to PocketGardener!</h2>
+    <p>Your personal offline companion for urban and apartment gardening.</p>
+    
+    <ul class="feature-list">
+      <li>📚 <strong>Plant Library:</strong> Track your plants with photos and detailed care notes</li>
+      <li>📅 <strong>Care Planner:</strong> Set custom watering and fertilizing reminders</li>
+      <li>🌿 <strong>Community Hub:</strong> Exchange cuttings, seeds, and organize local events</li>
+      <li>📖 <strong>Knowledge Base:</strong> Access expert gardening tips and micro-lessons</li>
+      <li>⏱️ <strong>Smart Tools:</strong> Watering timer and light level estimator</li>
+    </ul>
+
+    <p style="margin-top: 1.5rem;">
+      <strong>🔒 Complete Privacy:</strong><br>
+      All data is stored locally on your device. No cloud sync, no tracking - just you and your garden.
+    </p>
+
+    <p style="margin-top: 1rem; color: var(--text-light); font-size: 0.95rem;">
+      We've loaded some sample plants to get you started. Feel free to edit or delete them!
+    </p>
+
+    <button class="btn" id="closeWelcome" style="margin-top: 2rem;">🚀 Get Started</button>
+  </div>
+</div>
+
+<!-- View Plant Modal -->
+<div id="viewPlantModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="viewPlantName">Plant Details</h2>
+      <button class="close-modal" data-modal="viewPlantModal">&times;</button>
+    </div>
+    <div id="viewPlantContent"></div>
+  </div>
+</div>
+
+
+<script src="myscripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,830 @@
+/* ==========================================================
+   PocketGardener ‑ ENHANCED 2025
+   Mobile-first, dark-mode, a11y, print, motion-safe toggles
+   ========================================================== */
+
+/* 1.  DESIGN-TOKEN EXTENSIONS
+   ---------------------------------------------------------- */
+:root {
+  /* colours */
+  --primary: #2d6a4f;
+  --primary-light: #40916c;
+  --primary-dark: #1b4332;
+  --accent: #95d5b2;
+  --accent-light: #d4f3dc;
+  --bg: #f1f8f4;
+  --card: #ffffff;
+  --text: #212529;
+  --text-light: #495057;
+  --border: #ced4da;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #0dcaf0;
+  --purple: #8b5cf6;
+  --orange: #f97316;
+  --blue: #3b82f6;
+  --success: #28a745;
+
+  /* elevation */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.07);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+  /* motion */
+  --duration: 0.35s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+
+/* 2.  DARK-MODE OVERRIDES
+   ---------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121412;
+    --card: #1e1e1e;
+    --text: #e9ecef;
+    --text-light: #adb5bd;
+    --border: #343a40;
+    --primary-light: #52b788;
+    --accent-light: #2d6a4f;
+  }
+}
+
+/* 3.  HIGH-CONTRAST / FORCED-COLOURS
+   ---------------------------------------------------------- */
+@media (prefers-contrast: high) {
+  :root {
+    --primary: #005a3c;
+    --border: currentColor;
+    --shadow-sm: none;
+    --shadow-md: none;
+  }
+}
+
+/* 4.  GLOBAL RESETS
+   ---------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 5.  HEADER MODERNISATION
+   ---------------------------------------------------------- */
+header {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: white;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+h1 {
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 6.  NAVIGATION (desktop + mobile)
+   ---------------------------------------------------------- */
+nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+.nav-btn:hover,
+.nav-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.nav-btn.active {
+  background: white;
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* mobile hamburger */
+#navToggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 1.4rem;
+  padding: 0.4rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+}
+
+#navToggle:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  #navToggle {
+    display: block;
+  }
+  nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 1rem;
+    right: 1rem;
+    background: var(--card);
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+  }
+  nav.open {
+    display: flex;
+  }
+  .nav-btn {
+    width: 100%;
+    text-align: left;
+    color: var(--text);
+    background: transparent;
+    border: 0;
+  }
+  .nav-btn.active {
+    background: var(--primary);
+    color: white;
+  }
+}
+
+/* 7.  MAIN LAYOUT
+   ---------------------------------------------------------- */
+main {
+  padding: 2rem 0;
+  min-height: calc(100vh - 180px);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.section {
+  display: none;
+  animation: fadeIn 0.5s var(--ease);
+}
+.section.active {
+  display: block;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 8.  CARD SYSTEM
+   ---------------------------------------------------------- */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: box-shadow var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.card h2 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* 9.  BUTTONS
+   ---------------------------------------------------------- */
+.btn {
+  --btn-bg: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  background: var(--btn-bg);
+  color: white;
+  border: 0;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn:active {
+  transform: translateY(0);
+}
+.btn-secondary {
+  --btn-bg: linear-gradient(135deg, var(--text-light) 0%, var(--text) 100%);
+}
+.btn-danger {
+  --btn-bg: linear-gradient(135deg, var(--danger) 0%, #bb2d3b 100%);
+}
+
+/* 10.  FORMS MODERNISED
+   ---------------------------------------------------------- */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--card);
+  transition: border-color var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease);
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.15);
+}
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* 11.  GRIDS / PLANT CARDS
+   ---------------------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.75rem;
+}
+.plant-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all var(--duration) var(--ease);
+}
+.plant-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+.plant-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+}
+.plant-content {
+  padding: 1.5rem;
+}
+.plant-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 0.5rem;
+}
+.plant-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+.tag {
+  background: var(--accent-light);
+  color: var(--primary-dark);
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* 12.  REMINDERS & SWAPS
+   ---------------------------------------------------------- */
+.reminder-item {
+  background: var(--card);
+  border-left: 5px solid var(--primary);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--duration) var(--ease);
+}
+.reminder-item:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.swap-item {
+  background: linear-gradient(135deg, var(--card) 0%, var(--bg) 100%);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--accent-light);
+  transition: all var(--duration) var(--ease);
+}
+.swap-item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+
+.swap-type-badge {
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.badge-cutting {
+  background: #d4fc79;
+  color: #1b4332;
+}
+.badge-seeds {
+  background: #ffecd2;
+  color: #7c2d12;
+}
+.badge-event {
+  background: #a8edea;
+  color: #831843;
+}
+.badge-tools {
+  background: #d299c2;
+  color: #701a75;
+}
+
+/* 13.  COMMUNITY
+   ---------------------------------------------------------- */
+.community-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+.search-bar {
+  flex: 1;
+  min-width: 220px;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: border-color var(--duration) var(--ease);
+}
+.search-bar:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.community-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+.swap-card {
+  background: var(--card);
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration) var(--ease);
+}
+.swap-card:hover {
+  transform: scale(1.02);
+}
+
+/* 14.  LESSONS
+   ---------------------------------------------------------- */
+.lesson-card {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: all var(--duration) var(--ease);
+}
+.lesson-card:hover {
+  transform: translateX(8px) translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.lesson-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem;
+}
+.lesson-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+.lesson-content {
+  display: none;
+  background: var(--card);
+  color: var(--text);
+  padding: 2rem;
+  border-radius: var(--radius);
+  margin-top: 1rem;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--accent-light);
+}
+.lesson-content.active {
+  display: block;
+  animation: slideDown 0.4s var(--ease);
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 15.  UTILITIES
+   ---------------------------------------------------------- */
+.timer-display {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.05em;
+  margin: 2rem 0;
+}
+.timer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.light-meter {
+  height: 50px;
+  border-radius: 25px;
+  background: linear-gradient(to right, #1a1a1a 0%, #ffeb3b 50%, #ffffff 100%);
+  position: relative;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.light-indicator {
+  position: absolute;
+  top: -35px;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: all var(--duration) var(--ease);
+}
+
+/* 16.  MODALS
+   ---------------------------------------------------------- */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s var(--ease);
+}
+.modal-content {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  max-width: 650px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.4s var(--ease);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--accent-light);
+}
+.modal-header h2 {
+  margin: 0;
+  color: var(--primary);
+}
+.close-modal {
+  background: var(--bg);
+  border: 0;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  transition: all var(--duration) var(--ease);
+}
+.close-modal:hover {
+  background: var(--danger);
+  color: white;
+  transform: rotate(90deg);
+}
+
+/* 17.  CALENDAR
+   ---------------------------------------------------------- */
+.calendar-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.calendar-day-name {
+  text-align: center;
+  font-weight: 700;
+  color: var(--primary-dark);
+  padding: 0.75rem 0.25rem;
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+}
+.calendar-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+.calendar-date {
+  min-height: 80px;
+  padding: 0.5rem;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all var(--duration) var(--ease);
+}
+.calendar-date:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+.calendar-date.empty {
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+.calendar-date.today {
+  background: var(--accent-light);
+  border-color: var(--primary);
+  font-weight: 700;
+}
+.calendar-date.has-items {
+  border-color: var(--primary-light);
+  background: linear-gradient(135deg, rgba(149, 213, 178, 0.1) 0%, rgba(149, 213, 178, 0.05) 100%);
+}
+.date-number {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.calendar-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 0.25rem;
+}
+.calendar-indicator.care {
+  background: var(--primary);
+}
+.calendar-indicator.event {
+  background: var(--purple);
+}
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border);
+}
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* 18.  EMPTY STATE
+   ---------------------------------------------------------- */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-light);
+}
+.empty-state-icon {
+  font-size: 5rem;
+  opacity: 0.4;
+  filter: grayscale(50%);
+}
+
+/* 19.  FOOTER
+   ---------------------------------------------------------- */
+footer {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: white;
+  text-align: center;
+  padding: 2.5rem 1rem;
+  margin-top: 4rem;
+  box-shadow: 0 -4px 20px rgba(45, 106, 79, 0.2);
+}
+
+/* 20.  PRINT STYLES
+   ---------------------------------------------------------- */
+@media print {
+  header,
+  footer,
+  #navToggle,
+  .btn,
+  .modal,
+  .timer-controls {
+    display: none;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+  .card {
+    box-shadow: none;
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+}
+
+/* 21.  FINE-TUNED BREAKPOINTS
+   ---------------------------------------------------------- */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .timer-display {
+    font-size: 3rem;
+  }
+  .modal-content {
+    padding: 1.75rem;
+  }
+  .calendar-date {
+    min-height: 60px;
+  }
+  .calendar-day-name {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-date {
+    min-height: 50px;
+    padding: 0.25rem;
+  }
+  .calendar-dates,
+  .calendar-days {
+    gap: 0.25rem;
+  }
+  .community-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

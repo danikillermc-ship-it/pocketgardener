@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Pocket Gardener</title>
+  <link rel="stylesheet" href="style2.css" />
+  <style>
+    body {
+      background: var(--bg-light);
+      color: var(--text-dark);
+      font-family: system-ui, sans-serif;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    h1 {
+      color: var(--primary-dark);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.5rem;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: var(--primary-light);
+      text-align: left;
+    }
+    .admin-section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+    button {
+      margin: 0.2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌿 Admin Dashboard</h1>
+    <p>Welcome, <span id="adminName">Admin</span></p>
+    <button id="logoutAdminBtn" class="btn btn-secondary">🚪 Logout</button>
+
+    <!-- USERS -->
+    <section class="admin-section" id="usersSection">
+      <h2>👥 Manage Users</h2>
+      <input
+  type="text"
+  id="userSearch"
+  placeholder="🔍 Search users by name or email..."
+  style="padding:0.4rem; width:100%; margin:0.5rem 0;"
+>
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- COMMUNITY -->
+    <section class="admin-section" id="communitySection">
+      <h2>🪴 Manage Community Events</h2>
+      <input
+  type="text"
+  id="communitySearch"
+  placeholder="🔍 Search community events by title or author..."
+  style="padding:0.4rem; width:100%; margin:0.5rem 0;"
+>
+      <table id="communityTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Posted By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- DANGER ZONE -->
+    <section class="admin-section" id="dangerZone">
+      <h2>⚠️ Danger Zone</h2>
+      <button id="clearDatabaseBtn" class="btn btn-danger">Clear Database</button>
+    </section>
+  </div>
+
+  <script>
+const API_URL = "http://192.168.0.232:4000/api/admin";
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const token = localStorage.getItem("token");
+  const adminName = localStorage.getItem("user_name") || "Admin";
+  document.getElementById("adminName").textContent = adminName;
+  const headers = { "Authorization": "Bearer " + token };
+
+  // =====================
+  // LOAD USERS
+  // =====================
+  async function loadUsers() {
+    try {
+      const res = await fetch(`${API_URL}/users`, { headers });
+      const users = await res.json();
+      const tbody = document.querySelector("#usersTable tbody");
+      tbody.innerHTML = "";
+
+      users.forEach(u => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${u.id}</td>
+          <td>${u.name || '-'}</td>
+          <td>${u.email}</td>
+          <td>${u.role}</td>
+          <td>
+            <button class="btn btn-small btn-warning" onclick="changeRole(${u.id}, '${u.role}')">Toggle Role</button>
+            <button class="btn btn-small btn-danger" onclick="deleteUser(${u.id})">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      console.error("❌ Failed to load users:", err);
+    }
+  }
+
+  // =====================
+  // LOAD COMMUNITY
+  // =====================
+  async function loadCommunity() {
+    try {
+      const res = await fetch(`${API_URL}/community`, { headers });
+      const events = await res.json();
+      const tbody = document.querySelector("#communityTable tbody");
+      tbody.innerHTML = "";
+
+      events.forEach(ev => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${ev.id}</td>
+          <td>${ev.title}</td>
+          <td>${ev.description || ''}</td>
+          <td>${ev.user_name || 'Anonymous'}</td>
+          <td>
+            <button class="btn btn-small btn-danger" onclick="deleteEvent(${ev.id})">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      console.error("❌ Failed to load community:", err);
+    }
+  }
+
+  // =====================
+  // ACTIONS
+  // =====================
+  window.changeRole = async (id, currentRole) => {
+    const newRole = currentRole === "admin" ? "user" : "admin";
+    if (!confirm(`Change role to ${newRole}?`)) return;
+    await fetch(`${API_URL}/users/${id}/role`, {
+      method: "PUT",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({ role: newRole })
+    });
+    loadUsers();
+  };
+
+  window.deleteUser = async (id) => {
+    if (!confirm("Delete this user?")) return;
+    await fetch(`${API_URL}/users/${id}`, { method: "DELETE", headers });
+    loadUsers();
+  };
+
+  window.deleteEvent = async (id) => {
+    if (!confirm("Delete this event?")) return;
+    await fetch(`${API_URL}/community/${id}`, { method: "DELETE", headers });
+    loadCommunity();
+  };
+
+  document.getElementById("clearDatabaseBtn").addEventListener("click", async () => {
+    if (confirm("⚠️ This will delete most data. Continue?")) {
+      await fetch(`${API_URL}/clear`, { method: "DELETE", headers });
+      alert("Database cleared!");
+      loadUsers();
+      loadCommunity();
+    }
+  });
+
+  document.getElementById("logoutAdminBtn").addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "login.html";
+  });
+
+  // =====================
+  // SEARCH FILTERS
+  // =====================
+  const userSearch = document.getElementById("userSearch");
+  const communitySearch = document.getElementById("communitySearch");
+
+  if (userSearch) {
+    userSearch.addEventListener("input", () => {
+      const query = userSearch.value.toLowerCase();
+      document.querySelectorAll("#usersTable tbody tr").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(query) ? "" : "none";
+      });
+    });
+  }
+
+  if (communitySearch) {
+    communitySearch.addEventListener("input", () => {
+      const query = communitySearch.value.toLowerCase();
+      document.querySelectorAll("#communityTable tbody tr").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(query) ? "" : "none";
+      });
+    });
+  }
+
+  // =====================
+  // INITIAL LOAD
+  // =====================
+  await loadUsers();
+  await loadCommunity();
+});
+</script>
+
+</body>
+</html>
